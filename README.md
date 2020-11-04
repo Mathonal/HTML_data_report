@@ -49,3 +49,10 @@ Clustering is used when not target column is defined.
 it search the best Silhouette result between 2 cluster and Number of column in dataset clusters.
 
 In case clustering is used, a graph of silhouette values is also plotted in order to verify the accuracy of the 'Optimal Value' retained.
+
+### 4_Libraries used :
+Chart_studio (include plotly) : https://plotly.com/python/
+pandas
+numpy
+sklearn
+jinja2
