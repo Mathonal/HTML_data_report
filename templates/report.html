@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <head>
+      <!-- Required meta tags -->
+    <title>DESCRIPTIVE REPORT ON : {{ filename }}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- IE compatibility -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <!-- mobile screen conf -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto|Squada+One&display=swap" rel="stylesheet">
+
+    <link href='static/css/bootstrap.min.css' rel="stylesheet">
+    <link href='static/css/style.css' rel="stylesheet">
+  </head>
+
+</head>
+<body>
+    <div class="container col-12 blocgenerique">
+        <section class="row" style="height: 55px;"> </section><!-- Empty box  -->
+            <!-- part 1 : PRESENTATION  -->
+            <div class="generalblock">
+                <div><h1>DESCRIPTIVE REPORT ON : {{ filename }}</h1></div>
+                {% if err_dict['load'] %}
+                    <div><h3 class="errortext">ERROR IN LOADING, PLEASE VERIFY SEPARATOR : tab ","" or ";"" only</h3></div>
+                {% endif %}
+
+                <div><p>FILE SHAPE : {{ shape }}</p></div>
+                <div><p>FILE HEAD </p></div>
+                {{ head }}<br>
+                <div><p>TYPES AND MISSING VALUES TABLE: </p></div>
+                {{ misstable }}
+            </div>
+            {% if not err_dict['load'] %}
+                <div class="generalblock">
+                    <div><h2>DISTRIBUTION PER VARIABLE</h2></div>
+                    {% include 'distribox_4.html' %}
+                </div>
+                
+                <div class="generalblock">
+                    <div><h2>PRINCIPAL COMPONENT ANALYSIS</h2></div>
+                    <div><p>
+                        Variable to explain (target) is : <strong>{{ PCA_colH[0] }}</strong><br>
+                        {% if err_dict['target'] %}
+                            <div><h4 class="errortext">error : target column name not found in dataset </h4></div>
+                        {% endif %}
+                        Variable(s) to ignore : <strong>{{ PCA_colH[1] }}</strong><br>
+                        Non-Number Variable automatically discarded : <strong>{{ PCA_colH[2] }}</strong><br>
+                        Number of discarded Rows due to NA values : <strong>{{ PCA_rowH[0] }} representing {{PCA_rowH[1]}}% of total rows</strong><br>
+                    </p></div>
+
+
+                    {% if err_dict['PCA'] %}
+                        <div><h3 class="errortext">ERROR IN WORKING PCA, PLEASE VERIFY IF COLUMNS TYPES/CONTENTS</h3></div>
+                    {% else %}
+                        <div><h4>OPTIMAL Principal Components number to describe set : <strong>{{ OptimalPCAnb }}</strong></h4>
+                        (Nota : this optimal is determined when either 90% of variance is explained or new PC only explain less than 10% more variance, with a minimum of 2 PC) </div>
+                        <br>
+                        <div><p>Each PC explains dataset variance with:<br>
+                            {% for val in PCAsVariance %} 
+                                <strong>PC{{val[0]}} : {{val[1]}}%</strong> , 
+                            {% endfor %}<br>
+                            TOTAL EXPLAINED VARIANCE : <strong>{{totalvariance}}</strong> </p></div>
+                        {{ PCA_graphe }}
+                    </div>
+                    <div class="generalblock">
+                        <div><h2>DATASET SCATTERING PER PCA COUPLE</strong></h2></div>
+                        {% if err_dict['target'] %}
+                            <div><h3 class="errortext">ERROR : target column not found, cannot use colorscale ... please verify target name</h3></div>
+                        {% endif %}
+                        {% if kmean[0] %}
+                            <div><h4>Used clustering to colorscale results<br>
+                                Best Clustering number on data : <strong>{{kmean[1]}}</strong> with silhouette coef of {{kmean[2]}}
+                            </h4></div>
+                            {{ kmean[3] }}
+                        {% endif %}                       
+                        {% include 'PCA_graphes.html' %}
+                    {% endif %}
+                </div>
+            {% endif %}
+    </div>
+</body>
+</html>
+
